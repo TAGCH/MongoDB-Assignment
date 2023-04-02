@@ -1,0 +1,115 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\TAGCH> docker run --name Mongo-Assingment -e MONGO_INITDB_ROOT_USERNAME=TAGCH -e MONGO_INITDB_ROOT_PASSWORD=P@ssw0rd -d mongo
+e713d40aa0f5877575cb7a0bb3b871d8fa5a4037b9f123b859b1484510c31ef6
+PS C:\Users\TAGCH> docker exec -it my-mongo bash
+Error response from daemon: Container 933ba12b3c91a60cd2207a224924bf8b93f69d06d1cc5b8b823627f426b3614c is not running
+PS C:\Users\TAGCH> docker exec -it Mongo-Assingment bash
+root@e713d40aa0f5:/# mongosh -u TAGCH --authenticationDatabase admin -p
+Enter password: **************************************************
+PS C:\Users\TAGCH> mongosh -u TAGCH --authenticationDatabase admin -p
+mongosh : The term 'mongosh' is not recognized as the name of a cmdlet, function, script file, or operable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ mongosh -u TAGCH --authenticationDatabase admin -p
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (mongosh:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS C:\Users\TAGCH> docker exec -it Mongo-Assingment bash
+root@e713d40aa0f5:/# mongosh -u TAGCH --authenticationDatabase admin -p
+Enter password: ********
+Current Mongosh Log ID: 6429a4c31cf2d4efbb0ba676
+Connecting to:          mongodb://<credentials>@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&authSource=admin&appName=mongosh+1.6.0
+Using MongoDB:          6.0.2
+Using Mongosh:          1.6.0
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2023-04-02T15:50:25.596+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2023-04-02T15:50:26.458+00:00: /sys/kernel/mm/transparent_hugepage/enabled is 'always'. We suggest setting it to 'never'
+   2023-04-02T15:50:26.458+00:00: vm.max_map_count is too low
+------
+
+------
+   Enable MongoDB's free cloud-based monitoring service, which will then receive and display
+   metrics about your deployment (disk utilization, CPU, operation statistics, etc).
+
+   The monitoring data will be available on a MongoDB website with a unique URL accessible to you
+   and anyone you share the URL with. MongoDB may use this information to make product
+   improvements and to suggest MongoDB products and deployment options to you.
+
+   To enable free monitoring, run the following command: db.enableFreeMonitoring()
+   To permanently disable this reminder, run the following command: db.disableFreeMonitoring()
+------
+
+test> db.getCollectionNames()
+[]
+test> use school
+switched to db school
+school> db.students.insertMany([    {"name":"Ramesh","subject":"maths","marks":87},    {"name":"Ramesh","subject":"english","marks":59},    {"name":"Ramesh","subject":"science","marks":77},    {"name":"Rav","subject":"maths","marks":62}, {"name":"Rav","subject":"english","marks":83},    {"name":"Rav","subject":"science","marks":71},    {"name":"Alison","subject":"maths","marks":84},    {"name":"Alison","subject":"english","marks":82},    {"name":"Alison","subject":"science","marks":86},    {"name":"Steve","subject":"maths","marks":81},    {"name":"Steve","subject":"english","marks":89},{"name":"Steve","subject":"science","marks":77},    {"name":"Jan","subject":"english","marks":0,"reason":"absent"}])
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("6429a51b3a7bb2f32199fd03"),
+    '1': ObjectId("6429a51b3a7bb2f32199fd04"),
+    '2': ObjectId("6429a51b3a7bb2f32199fd05"),
+    '3': ObjectId("6429a51b3a7bb2f32199fd06"),
+    '4': ObjectId("6429a51b3a7bb2f32199fd07"),
+    '5': ObjectId("6429a51b3a7bb2f32199fd08"),
+    '6': ObjectId("6429a51b3a7bb2f32199fd09"),
+    '7': ObjectId("6429a51b3a7bb2f32199fd0a"),
+    '8': ObjectId("6429a51b3a7bb2f32199fd0b"),
+    '9': ObjectId("6429a51b3a7bb2f32199fd0c"),
+    '10': ObjectId("6429a51b3a7bb2f32199fd0d"),
+    '11': ObjectId("6429a51b3a7bb2f32199fd0e"),
+    '12': ObjectId("6429a51b3a7bb2f32199fd0f")
+  }
+}
+school> db.students.aggregate([
+...     {$group: {_id: "$name", totalMarks: {$sum: "$marks"}}}
+... ])
+[
+  { _id: 'Ramesh', totalMarks: 223 },
+  { _id: 'Alison', totalMarks: 252 },
+  { _id: 'Jan', totalMarks: 0 },
+  { _id: 'Rav', totalMarks: 216 },
+  { _id: 'Steve', totalMarks: 247 }
+]
+school> db.students.aggregate([
+...     {$group: {_id: "$subject", maxMarks: {$max: "$marks"}}}
+... ])
+[
+  { _id: 'english', maxMarks: 89 },
+  { _id: 'science', maxMarks: 86 },
+  { _id: 'maths', maxMarks: 87 }
+]
+school> db.students.aggregate([
+...     {$group: {_id: "$name", minMarks: {$min: "$marks"}}}
+... ])
+[
+  { _id: 'Rav', minMarks: 62 },
+  { _id: 'Steve', minMarks: 77 },
+  { _id: 'Ramesh', minMarks: 59 },
+  { _id: 'Jan', minMarks: 0 },
+  { _id: 'Alison', minMarks: 82 }
+]
+school> db.students.aggregate([
+...     {$group: {_id: "$subject", avgMarks: {$avg: "$marks"}}},
+...     {$sort: {avgMarks: -1}},
+...     {$limit: 2}
+... ])
+[
+  { _id: 'maths', avgMarks: 78.5 },
+  { _id: 'science', avgMarks: 77.75 }
+]
+school>
